@@ -7,15 +7,15 @@
         <source.version>1.8</source.version>
         <target.version>1.8</target.version>
         <bintray.repo>andsel/maven</bintray.repo>
-        <bintray.parent.package>io.moquette.moquette-parent</bintray.parent.package>
+        <bintray.parent.package>com.sh.wd.mqtt_broker</bintray.parent.package>
     </properties>
 
-    <groupId>io.moquette</groupId>
-    <artifactId>moquette-parent</artifactId>
+    <groupId>com.sh.wd</groupId>
+    <artifactId>mqtt_broker</artifactId>
 
     <packaging>pom</packaging>
-    <version>0.10-SNAPSHOT</version>
-    <name>Moquette MQTT</name>
+    <version>1.0.0</version>
+    <name>SH MQTT</name>
     <description>Moquette lightweight MQTT Broker</description>
     <inceptionYear>2011</inceptionYear>
     <url>https://github.com/andsel/moquette/</url>
@@ -31,18 +31,18 @@
         </license>
     </licenses>
 
-    <developers>
-        <developer>
-            <id>andsel</id>
-            <name>Andrea Selva</name>
-            <roles>
-                <role>architect</role>
-                <role>developer</role>
-                <role>founder</role>
-            </roles>
-            <timezone>+1</timezone>
-        </developer>
-    </developers>
+    <!--<developers>-->
+        <!--<developer>-->
+            <!--<id>andsel</id>-->
+            <!--<name>Andrea Selva</name>-->
+            <!--<roles>-->
+                <!--<role>architect</role>-->
+                <!--<role>developer</role>-->
+                <!--<role>founder</role>-->
+            <!--</roles>-->
+            <!--<timezone>+1</timezone>-->
+        <!--</developer>-->
+    <!--</developers>-->
 
     <contributors>
         <contributor>
@@ -108,21 +108,11 @@
     </scm>
 
     <modules>
-    	<module>common</module>
         <module>broker</module>
         <module>distribution</module>
         <module>embedding_moquette</module>
     </modules>
 
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.6</version>
-            </plugin>
-        </plugins>
-    </reporting>
 
     <build>
         <plugins>

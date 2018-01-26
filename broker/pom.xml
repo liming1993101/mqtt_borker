@@ -2,28 +2,24 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<relativePath>../</relativePath>
-		<artifactId>moquette-parent</artifactId>
-		<groupId>io.moquette</groupId>
-		<version>0.10-SNAPSHOT</version>
+		<artifactId>mqtt_broker</artifactId>
+		<groupId>com.sh.wd</groupId>
+		<version>1.0.0</version>
 	</parent>
 
-	<artifactId>moquette-broker</artifactId>
+	<artifactId>mqtt-broker</artifactId>
 	<packaging>jar</packaging>
 	<name>Moquette - broker</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bintray.package>io.moquette.moquette-broker</bintray.package>
+		<bintray.package>com.sh.wd.mqtt_broker</bintray.package>
 	</properties>
 
 	<dependencies>
-	
-        <dependency>
-            <groupId>io.moquette</groupId>
-            <artifactId>moquette-common</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
+
+
+
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -67,12 +63,7 @@
 			<artifactId>commons-codec</artifactId>
 			<version>1.10</version>
 		</dependency>
-		
-		<dependency>
-		    <groupId>mysql</groupId>
-		    <artifactId>mysql-connector-java</artifactId>
-		    <version>5.1.43</version>
-		</dependency>
+
 
 		<dependency>
 			<groupId>org.hdrhistogram</groupId>
@@ -143,6 +134,72 @@
 			<version>1.4.191</version>
 			<scope>test</scope>
 		</dependency>
+
+        <!--//队列-->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz-jobs</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+
+
+		<!--MyBatis相关-->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<version>3.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-spring</artifactId>
+			<version>1.2.3</version>
+		</dependency>
+
+		<!--数据库相关-->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.35</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sh.wd</groupId>
+			<artifactId>DBMagner</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sh.wd</groupId>
+			<artifactId>mqtt-storage</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sh.wd</groupId>
+			<artifactId>mqtt-storage</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sh.wd</groupId>
+			<artifactId>mqtt-storage</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<!--<dependency>-->
+			<!--<groupId>com.alibaba</groupId>-->
+			<!--<artifactId>druid</artifactId>-->
+			<!--<version>1.0.18</version>-->
+		<!--</dependency>-->
+
+
 	</dependencies>
 
 	<build>

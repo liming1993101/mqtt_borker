@@ -3,33 +3,47 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <relativePath>../</relativePath>
-        <artifactId>moquette-parent</artifactId>
-        <groupId>io.moquette</groupId>
-        <version>0.10-SNAPSHOT</version>
+        <artifactId>mqtt_broker</artifactId>
+        <groupId>com.sh.wd</groupId>
+        <version>1.0.0</version>
     </parent>
 
-    <artifactId>moquette-redis-storage</artifactId>
+    <artifactId>mqtt-storage</artifactId>
     <packaging>jar</packaging>
     <name>Moquette - Redis storage</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <bintray.package>io.moquette.moquette-broker</bintray.package>
+        <bintray.package>com.sh.wd.shwd-broker</bintray.package>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.5</version>
-        </dependency>
-        
+
+        <!--<dependency>-->
+            <!--<groupId>com.sh.wd</groupId>-->
+            <!--<artifactId>mqtt-broker</artifactId>-->
+            <!--<version>1.0.0</version>-->
+        <!--</dependency>-->
+       <!--队列-->
+        <!--<dependency>-->
+            <!--<groupId>org.quartz-scheduler</groupId>-->
+            <!--<artifactId>quartz</artifactId>-->
+            <!--<version>2.2.2</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.quartz-scheduler</groupId>-->
+            <!--<artifactId>quartz-jobs</artifactId>-->
+            <!--<version>2.2.2</version>-->
+        <!--</dependency>-->
+
 		<!-- redis依赖 -->
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>2.9.0</version>
 		</dependency>
+
 		<dependency>
 		    <groupId>org.springframework.data</groupId>
 		    <artifactId>spring-data-redis</artifactId>
@@ -43,20 +57,29 @@
 			<version>2.52</version>
 		</dependency>
 		
+
         <dependency>
-            <groupId>io.moquette</groupId>
-            <artifactId>moquette-common</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>1.8.6.RELEASE</version>
         </dependency>
-        
+
         <dependency>
-            <groupId>io.moquette</groupId>
-            <artifactId>moquette-common</artifactId>
-            <type>test-jar</type>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.5</version>
         </dependency>
-        
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-buffer</artifactId>
+            <version>4.1.14.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-mqtt</artifactId>
+            <version>4.1.14.Final</version>
+        </dependency>
+
     </dependencies>
 
     <build>

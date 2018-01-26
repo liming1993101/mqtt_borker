@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/moquette-parent.iml" filepath="$PROJECT_DIR$/moquette-parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/broker/mqtt-broker.iml" filepath="$PROJECT_DIR$/broker/mqtt-broker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/redis_storage/mqtt-storage.iml" filepath="$PROJECT_DIR$/redis_storage/mqtt-storage.iml" />
+    </modules>
+  </component>
+</project>

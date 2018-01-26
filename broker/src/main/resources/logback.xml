@@ -22,8 +22,8 @@
 	</appender>
 
 	<logger name="io.moquette" level="DEBUG" />
-	<logger name="io.moquette.spi.impl.ProtocolProcessor" level="DEBUG" />
-	<logger name="io.moquette.spi.impl.ProtocolProcessorBootstrapper" level="DEBUG" />
+	<logger name="com.sh.wd.spi.impl.ProtocolProcessor" level="DEBUG" />
+	<logger name="com.sh.wd.spi.impl.ProtocolProcessorBootstrapper" level="DEBUG" />
 
 	<root level="DEBUG">
 		<appender-ref ref="console" />
