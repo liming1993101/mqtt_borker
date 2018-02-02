@@ -16,28 +16,22 @@
 
 package com.sh.wd.persistence.memory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
-
+import com.sh.wd.persistence.PersistentSession;
 import com.sh.wd.server.Constants;
 import com.sh.wd.spi.ClientSession;
-import com.sh.wd.spi.IMessagesStore;
+import com.sh.wd.spi.IMessagesStore.StoredMessage;
 import com.sh.wd.spi.ISessionsStore;
+import com.sh.wd.spi.ISubscriptionsStore;
 import com.sh.wd.spi.impl.subscriptions.Subscription;
 import com.sh.wd.spi.impl.subscriptions.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sh.wd.persistence.PersistentSession;
-import com.sh.wd.spi.ISubscriptionsStore;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MemorySessionStore implements ISessionsStore, ISubscriptionsStore {
 
@@ -48,10 +42,10 @@ public class MemorySessionStore implements ISessionsStore, ISubscriptionsStore {
         final ClientSession clientSession;
         final Map<Topic, Subscription> subscriptions = new ConcurrentHashMap<>();
         final AtomicReference<PersistentSession> persistentSession = new AtomicReference<>(null);
-        final BlockingQueue<IMessagesStore.StoredMessage> queue = new ArrayBlockingQueue<>(Constants.MAX_MESSAGE_QUEUE);
-        final Map<Integer, IMessagesStore.StoredMessage> secondPhaseStore = new ConcurrentHashMap<>();
-        final Map<Integer, IMessagesStore.StoredMessage> outboundFlightMessages = new ConcurrentHashMap<>();
-        final Map<Integer, IMessagesStore.StoredMessage> inboundFlightMessages = new ConcurrentHashMap<>();
+        final BlockingQueue<StoredMessage> queue = new ArrayBlockingQueue<>(Constants.MAX_MESSAGE_QUEUE);
+        final Map<Integer, StoredMessage> secondPhaseStore = new ConcurrentHashMap<>();
+        final Map<Integer, StoredMessage> outboundFlightMessages = new ConcurrentHashMap<>();
+        final Map<Integer, StoredMessage> inboundFlightMessages = new ConcurrentHashMap<>();
 
         Session(String clientID, ClientSession clientSession) {
             this.clientID = clientID;
@@ -206,12 +200,12 @@ public class MemorySessionStore implements ISessionsStore, ISubscriptionsStore {
     }
 
     @Override
-    public IMessagesStore.StoredMessage inFlightAck(String clientID, int messageID) {
+    public StoredMessage inFlightAck(String clientID, int messageID) {
         return getSession(clientID).outboundFlightMessages.remove(messageID);
     }
 
     @Override
-    public void inFlight(String clientID, int messageID, IMessagesStore.StoredMessage msg) {
+    public void inFlight(String clientID, int messageID, StoredMessage msg) {
         Session session = sessions.get(clientID);
         if (session == null) {
             LOG.error("Can't find the session for client <{}>", clientID);
@@ -232,7 +226,7 @@ public class MemorySessionStore implements ISessionsStore, ISubscriptionsStore {
             return -1;
         }
 
-        Map<Integer, IMessagesStore.StoredMessage> m = sessions.get(clientID).outboundFlightMessages;
+        Map<Integer, StoredMessage> m = sessions.get(clientID).outboundFlightMessages;
 
         int maxId = 0;
 
@@ -251,18 +245,18 @@ public class MemorySessionStore implements ISessionsStore, ISubscriptionsStore {
             LOG.warn("concurrent nextPacketId confilct!");
         }
 
-        m.put(nextPacketId, new IMessagesStore.StoredMessage(null, null, null));
+        m.put(nextPacketId, new StoredMessage(null, null, null));
         return nextPacketId;
     }
 
     @Override
-    public BlockingQueue<IMessagesStore.StoredMessage> queue(String clientID) {
+    public BlockingQueue<StoredMessage> queue(String clientID) {
         if (!sessions.containsKey(clientID)) {
             LOG.error("Can't find the session for client <{}>", clientID);
             return null;
         }
 
-        BlockingQueue<IMessagesStore.StoredMessage> queue = sessions.get(clientID).queue;
+        BlockingQueue<StoredMessage> queue = sessions.get(clientID).queue;
 
         // 超过最大容量的一半时，将控制不再增长
         if (queue.size() > Constants.MAX_MESSAGE_QUEUE / 2) {
@@ -278,7 +272,7 @@ public class MemorySessionStore implements ISessionsStore, ISubscriptionsStore {
     }
 
     @Override
-    public void moveInFlightToSecondPhaseAckWaiting(String clientID, int messageID, IMessagesStore.StoredMessage msg) {
+    public void moveInFlightToSecondPhaseAckWaiting(String clientID, int messageID, StoredMessage msg) {
         LOG.info("Moving msg inflight second phase store, clientID <{}> messageID {}", clientID, messageID);
         Session session = sessions.get(clientID);
         if (session == null) {
@@ -291,7 +285,7 @@ public class MemorySessionStore implements ISessionsStore, ISubscriptionsStore {
     }
 
     @Override
-    public IMessagesStore.StoredMessage secondPhaseAcknowledged(String clientID, int messageID) {
+    public StoredMessage secondPhaseAcknowledged(String clientID, int messageID) {
         LOG.info("Acknowledged message in second phase, clientID <{}> messageID {}", clientID, messageID);
         return getSession(clientID).secondPhaseStore.remove(messageID);
     }
@@ -308,12 +302,12 @@ public class MemorySessionStore implements ISessionsStore, ISubscriptionsStore {
     }
 
     @Override
-    public IMessagesStore.StoredMessage inboundInflight(String clientID, int messageID) {
+    public StoredMessage inboundInflight(String clientID, int messageID) {
         return getSession(clientID).inboundFlightMessages.get(messageID);
     }
 
     @Override
-    public void markAsInboundInflight(String clientID, int messageID, IMessagesStore.StoredMessage msg) {
+    public void markAsInboundInflight(String clientID, int messageID, StoredMessage msg) {
         if (!sessions.containsKey(clientID))
             LOG.error("Can't find the session for client <{}>", clientID);
 

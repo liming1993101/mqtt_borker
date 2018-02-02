@@ -1,7 +1,7 @@
 package com.sh.wd.server.netty;
 
 import com.sh.wd.server.ConnectionDescriptorStore;
-import com.sh.wd.spi.security.IAuthenticator;
+import com.sh.wd.spi.security.DBService;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleStateHandler;
 
@@ -11,9 +11,9 @@ import io.netty.handler.timeout.IdleStateHandler;
 public class TimeOutHandle extends IdleStateHandler {
 
     private String account;
-    private IAuthenticator m_authenticator;
+    private DBService m_authenticator;
     private ConnectionDescriptorStore connectionDescriptorStore;
-    public TimeOutHandle(int readerIdleTimeSeconds, int writerIdleTimeSeconds, int allIdleTimeSeconds, String account, IAuthenticator m_authenticator, ConnectionDescriptorStore connectionDescriptorStore) {
+    public TimeOutHandle(int readerIdleTimeSeconds, int writerIdleTimeSeconds, int allIdleTimeSeconds, String account, DBService m_authenticator, ConnectionDescriptorStore connectionDescriptorStore) {
         super(readerIdleTimeSeconds, writerIdleTimeSeconds, allIdleTimeSeconds);
         this.account=account;
         this.m_authenticator=m_authenticator;

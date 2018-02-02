@@ -21,7 +21,7 @@ import com.sh.wd.bean.MessageLogEntity;
 /**
  * username and password checker
  */
-public interface IAuthenticator {
+public interface DBService {
 
     boolean checkValid(String clientId, String username, byte[] password);
     int login(String clientId,String password);

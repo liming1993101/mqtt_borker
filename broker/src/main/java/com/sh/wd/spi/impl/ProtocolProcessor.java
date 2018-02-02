@@ -27,7 +27,7 @@ import com.sh.wd.spi.*;
 import com.sh.wd.spi.impl.subscriptions.Subscription;
 import com.sh.wd.spi.impl.subscriptions.SubscriptionsDirectory;
 import com.sh.wd.spi.impl.subscriptions.Topic;
-import com.sh.wd.spi.security.IAuthenticator;
+import com.sh.wd.spi.security.DBService;
 import com.sh.wd.spi.security.IAuthorizator;
 import com.sh.wd.utils.QuartzManager;
 import io.netty.buffer.ByteBuf;
@@ -141,7 +141,7 @@ public class ProtocolProcessor {
 
     private ISessionsStore m_sessionsStore;
 
-    private IAuthenticator m_authenticator;
+    private DBService dbService;
     private BrokerInterceptor m_interceptor;
 
     private Qos0PublishHandler qos0PublishHandler;
@@ -157,21 +157,21 @@ public class ProtocolProcessor {
     }
 
     public void init(SubscriptionsDirectory subscriptions, IMessagesStore storageService, ISessionsStore sessionsStore,
-                     IAuthenticator authenticator, boolean allowAnonymous, IAuthorizator authorizator,
+                     DBService authenticator, boolean allowAnonymous, IAuthorizator authorizator,
                      BrokerInterceptor interceptor) {
         init(subscriptions, storageService, sessionsStore, authenticator, allowAnonymous, false, authorizator,
             interceptor, null);
     }
 
     public void init(SubscriptionsDirectory subscriptions, IMessagesStore storageService, ISessionsStore sessionsStore,
-                     IAuthenticator authenticator, boolean allowAnonymous, boolean allowZeroByteClientId,
+                     DBService authenticator, boolean allowAnonymous, boolean allowZeroByteClientId,
                      IAuthorizator authorizator, BrokerInterceptor interceptor) {
         init(subscriptions, storageService, sessionsStore, authenticator, allowAnonymous, allowZeroByteClientId,
             authorizator, interceptor, null);
     }
 
     public void init(SubscriptionsDirectory subscriptions, IMessagesStore storageService, ISessionsStore sessionsStore,
-                     IAuthenticator authenticator, boolean allowAnonymous, boolean allowZeroByteClientId,
+                     DBService authenticator, boolean allowAnonymous, boolean allowZeroByteClientId,
                      IAuthorizator authorizator, BrokerInterceptor interceptor, String serverPort) {
         init(new ConnectionDescriptorStore(sessionsStore), subscriptions, storageService, sessionsStore, authenticator,
             allowAnonymous, allowZeroByteClientId, authorizator, interceptor, serverPort);
@@ -196,7 +196,7 @@ public class ProtocolProcessor {
      *            to notify events to an intercept handler
      */
     void init(ConnectionDescriptorStore connectionDescriptors, SubscriptionsDirectory subscriptions,
-              IMessagesStore storageService, ISessionsStore sessionsStore, IAuthenticator authenticator,
+              IMessagesStore storageService, ISessionsStore sessionsStore, DBService authenticator,
               boolean allowAnonymous, boolean allowZeroByteClientId, IAuthorizator authorizator,
               BrokerInterceptor interceptor, String serverPort) {
         LOG.info("Initializing MQTT protocol processor...");
@@ -210,7 +210,7 @@ public class ProtocolProcessor {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Initial subscriptions tree={}", subscriptions.dumpTree());
         }
-        m_authenticator = authenticator;
+        dbService = authenticator;
         m_messagesStore = storageService;
         m_sessionsStore = sessionsStore;
         subscriptionStore = sessionsStore.subscriptionStore();
@@ -223,7 +223,7 @@ public class ProtocolProcessor {
         LOG.info("Initializing QoS publish handlers...");
         this.qos0PublishHandler = new Qos0PublishHandler(m_authorizator, m_messagesStore, m_interceptor,
                 this.messagesPublisher);
-        this.qos1PublishHandler = new Qos1PublishHandler(m_authorizator, m_messagesStore, m_interceptor,
+        this.qos1PublishHandler = new Qos1PublishHandler(authorizator,dbService, m_messagesStore, m_interceptor,
                 this.connectionDescriptors, this.messagesPublisher);
         this.qos2PublishHandler = new Qos2PublishHandler(m_authorizator, subscriptions, m_messagesStore, m_interceptor,
                 this.connectionDescriptors, m_sessionsStore, this.messagesPublisher);
@@ -334,7 +334,7 @@ public class ProtocolProcessor {
                 return false;
             }
 
-            if (m_authenticator.login(clientId,pwd)==-1) {
+            if (dbService.login(clientId,pwd)==-1) {
                 LOG.error("Authenticator has rejected the MQTT credentials CId={}, username={}, password={}",
                         clientId, msg.payload().userName(), pwd);
                 failedCredentials(channel);
@@ -346,7 +346,7 @@ public class ProtocolProcessor {
             failedCredentials(channel);
             return false;
         }
-        m_authenticator.addUserState(clientId,1);
+        dbService.addUserState(clientId,1);
         return true;
     }
 
@@ -452,7 +452,7 @@ public class ProtocolProcessor {
         if (pipeline.names().contains("idleStateHandler")) {
             pipeline.remove("idleStateHandler");
         }
-        pipeline.addFirst("idleStateHandler", new TimeOutHandle(idleTime, 0, 0,clientId,m_authenticator,this.connectionDescriptors));
+        pipeline.addFirst("idleStateHandler", new TimeOutHandle(idleTime, 0, 0,clientId,dbService,this.connectionDescriptors));
     }
 
     /**
@@ -483,7 +483,7 @@ public class ProtocolProcessor {
 //            InterceptAcknowledgedMessage wrapped = new InterceptAcknowledgedMessage(inflightMsg, topic, username, messageID);
 //            m_interceptor.notifyMessageAcknowledged(wrapped);
 //        }
-        boolean b= m_authenticator.updataMessageState(messageID,1);//消息发送成功 修改MySQL数据库消息状态
+        boolean b= dbService.updataMessageState(messageID,1);//消息发送成功 修改MySQL数据库消息状态
         if (!b){
             LOG.error("客户端收到消息:","数据库修改消息状态失败!");
         }

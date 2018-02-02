@@ -29,7 +29,7 @@ import com.sh.wd.spi.ISubscriptionsStore;
 import com.sh.wd.spi.impl.security.*;
 import com.sh.wd.spi.impl.subscriptions.Subscription;
 import com.sh.wd.spi.impl.subscriptions.SubscriptionsDirectory;
-import com.sh.wd.spi.security.IAuthenticator;
+import com.sh.wd.spi.security.DBService;
 import com.sh.wd.spi.security.IAuthorizator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ import java.util.List;
 public class ProtocolProcessorBootstrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProtocolProcessorBootstrapper.class);
-    public static final String MAPDB_STORE_CLASS = "MemoryStorageService";
+    public static final String MAPDB_STORE_CLASS = "com.sh.wd.persistence.memory.MemoryStorageService";
 
     private ISessionsStore m_sessionsStore;
 
@@ -95,7 +95,7 @@ public class ProtocolProcessorBootstrapper {
      *         broker.
      */
     public ProtocolProcessor init(IConfig props, List<? extends InterceptHandler> embeddedObservers,
-                                  IAuthenticator authenticator, IAuthorizator authorizator, Server server) {
+                                  DBService dbService, IAuthorizator authorizator, Server server) {
         IMessagesStore messagesStore;
         LOG.info("Initializing messages and sessions stores...");
         String storageClassName = props.getProperty(BrokerConstants.STORAGE_CLASS_NAME, MAPDB_STORE_CLASS);
@@ -134,19 +134,21 @@ public class ProtocolProcessorBootstrapper {
         LOG.info("Configuring MQTT authenticator...");
         String authenticatorClassName = props.getProperty(BrokerConstants.AUTHENTICATOR_CLASS_NAME, "");
 
-        if (authenticator == null && !authenticatorClassName.isEmpty()) {
-            authenticator = loadClass(authenticatorClassName, IAuthenticator.class, IConfig.class, props);
+//        if (dbService == null && !authenticatorClassName.isEmpty()) {
+//            dbService = loadClass(authenticatorClassName, DBServiceImpl.class, IConfig.class, props);
+//        }
+        if (dbService==null){
+            dbService=new DBServiceImpl();
         }
-
         IResourceLoader resourceLoader = props.getResourceLoader();
-        if (authenticator == null) {
+        if (dbService == null) {
             String passwdPath = props.getProperty(BrokerConstants.PASSWORD_FILE_PROPERTY_NAME, "");
             if (passwdPath.isEmpty()) {
-                authenticator = new AcceptAllAuthenticator();
+                dbService = new AcceptAllAuthenticator();
             } else {
-                authenticator = new ResourceAuthenticator(resourceLoader, passwdPath);
+                dbService = new ResourceAuthenticator(resourceLoader, passwdPath);
             }
-            LOG.info("An {} authenticator instance will be used", authenticator.getClass().getName());
+            LOG.info("An {} authenticator instance will be used", dbService.getClass().getName());
         }
 
         LOG.info("Configuring MQTT authorizator...");
@@ -179,7 +181,8 @@ public class ProtocolProcessorBootstrapper {
                 .parseBoolean(props.getProperty(BrokerConstants.ALLOW_ANONYMOUS_PROPERTY_NAME, "true"));
         boolean allowZeroByteClientId = Boolean
                 .parseBoolean(props.getProperty(BrokerConstants.ALLOW_ZERO_BYTE_CLIENT_ID_PROPERTY_NAME, "false"));
-        m_processor.init(connectionDescriptors, subscriptions, messagesStore, m_sessionsStore, authenticator,
+        m_processor.init(connectionDescriptors, subscriptions, messagesStore, m_sessionsStore, dbService
+                ,
                 allowAnonymous, allowZeroByteClientId, authorizator, interceptor,
                 props.getProperty(BrokerConstants.PORT_PROPERTY_NAME));
         return m_processor;

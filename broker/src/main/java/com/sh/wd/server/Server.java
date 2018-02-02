@@ -33,7 +33,7 @@ import com.sh.wd.server.netty.NettyAcceptor;
 import com.sh.wd.spi.impl.ProtocolProcessor;
 import com.sh.wd.spi.impl.ProtocolProcessorBootstrapper;
 import com.sh.wd.spi.impl.subscriptions.Subscription;
-import com.sh.wd.spi.security.IAuthenticator;
+import com.sh.wd.spi.security.DBService;
 import com.sh.wd.spi.security.IAuthorizator;
 import com.sh.wd.spi.security.ISslContextCreator;
 import io.netty.handler.codec.mqtt.MqttPublishMessage;
@@ -190,7 +190,7 @@ public class Server {
         startServer(config, handlers, null, null, null);
     }
 
-    public void startServer(IConfig config, List<? extends InterceptHandler> handlers, ISslContextCreator sslCtxCreator, IAuthenticator authenticator, IAuthorizator authorizator)
+    public void startServer(IConfig config, List<? extends InterceptHandler> handlers, ISslContextCreator sslCtxCreator, DBService dbService, IAuthorizator authorizator)
             throws IOException {
         if (handlers == null) {
             handlers = Collections.emptyList();
@@ -203,11 +203,12 @@ public class Server {
         if (handlerProp != null) {
             config.setProperty(BrokerConstants.INTERCEPT_HANDLER_PROPERTY_NAME, handlerProp);
         }
+
         configureCluster(config);
         final String persistencePath = config.getProperty(BrokerConstants.PERSISTENT_STORE_PROPERTY_NAME);
         LOG.info("Configuring Using persistent store file, path={}", persistencePath);
         m_processorBootstrapper = new ProtocolProcessorBootstrapper();
-        final ProtocolProcessor processor = m_processorBootstrapper.init(config, handlers, authenticator, authorizator, this);
+        final ProtocolProcessor processor = m_processorBootstrapper.init(config, handlers, dbService, authorizator, this);
         LOG.info("Initialized MQTT protocol processor");
         if (sslCtxCreator == null) {
             LOG.warn("Using default SSL context creator");

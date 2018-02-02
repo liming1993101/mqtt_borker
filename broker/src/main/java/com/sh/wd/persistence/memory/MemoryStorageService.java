@@ -16,20 +16,28 @@
 
 package com.sh.wd.persistence.memory;
 
-import com.sh.wd.spi.ISessionsStore;
+
+import com.sh.wd.config.IConfig;
+import com.sh.wd.redis.RedisStorageService;
 import com.sh.wd.spi.IMessagesStore;
+import com.sh.wd.spi.ISessionsStore;
 import com.sh.wd.spi.IStore;
 
 public class MemoryStorageService implements IStore {
 
-    private MemorySessionStore m_sessionsStore;
-    private MemoryMessagesStore m_messagesStore;
-
-    public MemoryStorageService() {
-        m_messagesStore = new MemoryMessagesStore();
-        m_sessionsStore = new MemorySessionStore();
-        m_messagesStore.initStore();
-        m_sessionsStore.initStore();
+//    private MemorySessionStore m_sessionsStore;
+//    private MemoryMessagesStore m_messagesStore;
+    private ISessionsStore m_sessionsStore;
+    private IMessagesStore m_messagesStore;
+    public MemoryStorageService(IConfig props) {
+//
+        RedisStorageService redisStorageService=new RedisStorageService(props);
+        m_sessionsStore=redisStorageService.sessionsStore();
+        m_messagesStore=redisStorageService.messagesStore();
+//        m_sessionsStore=new MemorySessionStore();
+//        m_messagesStore=new MemoryMessagesStore();
+//        m_messagesStore.initStore();
+//        m_sessionsStore.initStore();
     }
 
     @Override
@@ -44,6 +52,7 @@ public class MemoryStorageService implements IStore {
 
     @Override
     public void initStore() {
+
     }
 
     @Override

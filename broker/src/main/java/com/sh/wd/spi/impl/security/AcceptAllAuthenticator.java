@@ -17,9 +17,9 @@
 package com.sh.wd.spi.impl.security;
 
 import com.sh.wd.bean.MessageLogEntity;
-import com.sh.wd.spi.security.IAuthenticator;
+import com.sh.wd.spi.security.DBService;
 
-public class AcceptAllAuthenticator implements IAuthenticator {
+public class AcceptAllAuthenticator implements DBService {
 
     public boolean checkValid(String clientId, String username, byte[] password) {
         return true;

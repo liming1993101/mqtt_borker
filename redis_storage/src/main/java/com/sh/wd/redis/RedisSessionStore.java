@@ -37,7 +37,7 @@ public class RedisSessionStore implements ISessionsStore, ISubscriptionsStore {
     // maps clientID->[MessageId -> guid]
     private final String m_secondPhaseStore = "secondPhase:";
 
-    private final String subscriptions = "subscriptions:";
+    private final String subscriptions = "Subscriptions:";
 
     private final String topics = "Topics:";
 

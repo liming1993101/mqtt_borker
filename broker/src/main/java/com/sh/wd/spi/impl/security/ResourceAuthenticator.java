@@ -18,7 +18,7 @@ package com.sh.wd.spi.impl.security;
 
 import com.sh.wd.bean.MessageLogEntity;
 import com.sh.wd.config.IResourceLoader;
-import com.sh.wd.spi.security.IAuthenticator;
+import com.sh.wd.spi.security.DBService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ import java.util.Map;
  * NB -n is important because echo append a newline by default at the of string. -n avoid this
  * behaviour.
  */
-public class ResourceAuthenticator implements IAuthenticator {
+public class ResourceAuthenticator implements DBService {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ResourceAuthenticator.class);
 
